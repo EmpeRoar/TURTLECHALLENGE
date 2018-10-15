@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace TURTLECHALLENGE
 {
@@ -25,7 +26,7 @@ namespace TURTLECHALLENGE
         void Move();
         void Left();
         void Right();
-        void Report();
+        string Report();
     }
 
     public interface ITurtleState
@@ -40,15 +41,13 @@ namespace TURTLECHALLENGE
         public int XPos { get; set; }
         public int YPos { get; set; }
         public Face Face { get; set; }
-
-        
     }
 
     public class Turtle : ITurtle
     {
         public bool IsPlaced { get; private set; } = false;
       
-        private const int TOP = 5;
+        private const int TOP = 4;
         private const int BOTTOM = 0;
 
         private ITurtleState _turtleState;
@@ -61,8 +60,6 @@ namespace TURTLECHALLENGE
         {
             _turtleState = new TurtleState();
         }
-
-        
 
         public void Place(string input)
         {
@@ -80,7 +77,6 @@ namespace TURTLECHALLENGE
             }
 
         }
-
 
         public void Move()
         {
@@ -128,29 +124,56 @@ namespace TURTLECHALLENGE
             }
         }
 
-        public void Report()
+        public string Report()
         {
-            Console.WriteLine("--OUTPUT--");
-            Console.WriteLine($"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}");
+            return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
     }
 
+    public static class CommandExtension
+    {
+        public static bool IsValidPlaceCommand(this string input)
+        {
+            var regex = @"([A-Z])\w+\s\d,\d,([A-Z])\w+";
+            var match = Regex.Match(input, regex, RegexOptions.IgnoreCase);
+            if (!match.Success)
+            {
+                return false;
+            }
+
+            string[] str = input.Split(" ");
+            var orientation = str[1];
+            string[] coordinates = orientation.Split(",");
+
+            Face face;
+            if (!Enum.TryParse(coordinates[2].ToUpper(), out face))
+            {
+                return false;
+            }
+            return true;
+        }
+    }
+    
     class Program
     {
   
         static Turtle turtle;
         static void Main(string[] args)
         {
+            Startup();
+        }
+
+        static void Startup()
+        {
             turtle = new Turtle();
             Console.WriteLine("--INPUT--");
             ProcessCommand(Console.ReadLine());
-
         }
 
         static void ProcessCommand(string input)
         {
-            input = input.ToUpper();
-            string cmd = input.Split(" ")[0];
+            var inputs = input.ToUpper().Split(" ");
+            string cmd = inputs[0];
             Command command;
             if (Enum.TryParse(cmd.ToUpper(), out command))
             {
@@ -158,6 +181,15 @@ namespace TURTLECHALLENGE
                 {
                     if (!turtle.IsPlaced)
                     {
+                        DeletePrevConsoleLine();
+                        ProcessCommand(Console.ReadLine());
+                    }
+                }
+                else
+                {
+                    if (!input.IsValidPlaceCommand())
+                    {
+                        DeletePrevConsoleLine();
                         ProcessCommand(Console.ReadLine());
                     }
                 }
@@ -168,11 +200,26 @@ namespace TURTLECHALLENGE
                     case Command.MOVE: turtle.Move(); break;
                     case Command.LEFT: turtle.Left(); break;
                     case Command.RIGHT: turtle.Right(); break;
-                    case Command.REPORT: turtle.Report(); break;
+                    case Command.REPORT:
+                        Console.WriteLine("--OUTPUT--");
+                        Console.WriteLine(turtle.Report());
+                        break;
                 }
+            }
+            else
+            {
+                DeletePrevConsoleLine();
             }
 
             ProcessCommand(Console.ReadLine());
+        }
+
+        private static void DeletePrevConsoleLine()
+        {
+            if (Console.CursorTop == 0) return;
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
+            Console.Write(new string(' ', Console.WindowWidth));
+            Console.SetCursorPosition(0, Console.CursorTop - 1);
         }
 
     }
