@@ -23,21 +23,28 @@ namespace TURTLECHALLENGE
     public interface ITurtle
     {
         void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine);
-        void Place(string input);
+        bool Place(string input);
         void Move();
         void Left();
         void Right();
         string Report();
     }
 
-    
-
-    public class Table
+    public interface ITable
     {
-        public const int Top = 4;
-        public const int Bottom = 0;
+        int NorthEdge { get; set; }
+        int SouthEdge { get; set; }
+        int EastEdge { get; set; }
+        int WestEdge { get; set; }
     }
 
+    public class Table : ITable
+    {
+        public int NorthEdge { get; set; } = 4;
+        public int SouthEdge { get; set; } = 0;
+        public int EastEdge { get; set; } = 4;
+        public int WestEdge { get; set; } = 0;
+    }
 
     public interface ITurtleState
     {
@@ -56,62 +63,60 @@ namespace TURTLECHALLENGE
     public class Turtle : ITurtle
     {
         public bool IsPlaced { get; private set; } = false;
-      
-        private const int TOP = 4;
-        private const int BOTTOM = 0;
-
-        
-        private ITurtleState _turtleState;
-        public Turtle(ITurtleState turtleState)
+        private readonly ITurtleState _turtleState;
+        private readonly ITable _table;
+        public Turtle(ITurtleState turtleState, ITable table)
         {
             _turtleState = turtleState;
+            _table = table;
         }
-
-        public Turtle()
-        {
-            _turtleState = new TurtleState();
-        }
-
-        public void Place(string input)
+        public bool Place(string input)
         {
             string[] str = input.Split(" ");
             var orientation = str[1];
             string[] coordinates = orientation.Split(",");
 
-            Face face;
-            if (Enum.TryParse(coordinates[2].ToUpper(), out face))
+            var xpos = Convert.ToInt32(coordinates[0]);
+            var ypos = Convert.ToInt32(coordinates[1]);
+
+            if (xpos <= _table.EastEdge && xpos >= _table.WestEdge && 
+                ypos <= _table.NorthEdge && ypos >= _table.SouthEdge )
             {
-                _turtleState.XPos = Convert.ToInt32(coordinates[0]);
-                _turtleState.YPos = Convert.ToInt32(coordinates[1]);
-                _turtleState.Face = face;
-                IsPlaced = true;
+                Face face;
+                if (Enum.TryParse(coordinates[2].ToUpper(), out face))
+                {
+                    _turtleState.XPos = xpos;
+                    _turtleState.YPos = ypos;
+                    _turtleState.Face = face;
+                    IsPlaced = true;
+                    return IsPlaced;
+                }
             }
 
+            return IsPlaced;
         }
-
         public void Move()
         {
             switch (_turtleState.Face)
             {
                 case Face.NORTH:
-                    if (_turtleState.YPos < TOP)
+                    if (_turtleState.YPos < _table.NorthEdge)
                         _turtleState.YPos++;
                     break;
                 case Face.SOUTH:
-                    if (_turtleState.YPos > BOTTOM)
+                    if (_turtleState.YPos > _table.SouthEdge)
                         _turtleState.YPos--;
                     break;
                 case Face.EAST:
-                    if(_turtleState.XPos < TOP)
+                    if(_turtleState.XPos < _table.EastEdge)
                         _turtleState.XPos++;
                     break;
                 case Face.WEST:
-                    if(_turtleState.XPos > BOTTOM)
+                    if(_turtleState.XPos > _table.WestEdge)
                         _turtleState.XPos--;
                     break;
             }
         }
-
         public void Right()
         {
             switch (_turtleState.Face)
@@ -122,8 +127,6 @@ namespace TURTLECHALLENGE
                 case Face.WEST: _turtleState.Face = Face.NORTH; break;
             }
         }
-
-
         public void Left()
         {
             switch (_turtleState.Face)
@@ -134,12 +137,10 @@ namespace TURTLECHALLENGE
                 case Face.WEST: _turtleState.Face = Face.SOUTH; break;
             }
         }
-
         public string Report()
         {
             return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
-
         public void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine)
         {
             var input = readLine();
@@ -167,7 +168,10 @@ namespace TURTLECHALLENGE
 
                 switch (command)
                 {
-                    case Command.PLACE: Place(input); break;
+                    case Command.PLACE:
+                        if (!Place(input))
+                            deleteConsoleLine();
+                        break;
                     case Command.MOVE: Move(); break;
                     case Command.LEFT: Left(); break;
                     case Command.RIGHT: Right(); break;
@@ -188,23 +192,9 @@ namespace TURTLECHALLENGE
 
         private bool IsValidPlaceCommand(string input)
         {
-            var regex = @"([A-Z])\w+\s\d,\d,([A-Z])\w+";
+            var regex = @"PLACE\s\d,\d,(NORTH|SOUTH|EAST|WEST)";
             var match = Regex.Match(input, regex, RegexOptions.IgnoreCase);
-            if (!match.Success)
-            {
-                return false;
-            }
-
-            string[] str = input.Split(" ");
-            var orientation = str[1];
-            string[] coordinates = orientation.Split(",");
-
-            Face face;
-            if (!Enum.TryParse(coordinates[2].ToUpper(), out face))
-            {
-                return false;
-            }
-            return true;
+            return match.Success;
         }
     }
 
@@ -214,15 +204,41 @@ namespace TURTLECHALLENGE
 
         static void Main(string[] args)
         {
-            Startup();
+            StartUp();
         }
 
-        static void Startup()
+        static void StartUp()
+        {
+            Console.WriteLine("Choose Options");
+            Console.WriteLine("1. Standard Input 2. Input from FILE");
+            var selection = Console.ReadLine();
+            if (isValidSelection(selection))
+            {
+                switch (selection)
+                {
+                    case "1": StandardInput(); break;
+                    case "2": FileInput(); break;
+                }
+            }
+            else
+            {
+                StartUp();
+            }
+        }
+
+        static void FileInput()
+        {
+
+        }
+
+        static void StandardInput()
         {
             Console.WriteLine("--INPUT--");
 
-            var turtle = new Turtle();
-            
+            var table = new Table();
+            var turtleState = new TurtleState();
+            var turtle = new Turtle(turtleState, table);
+
             Func<string> readLine = () =>
             {
                 return Console.ReadLine();
@@ -241,6 +257,7 @@ namespace TURTLECHALLENGE
             turtle.ProcessCommand(readLine, report, deleteConsoleLine);
         }
         
+        
         private static void DeletePrevConsoleLine()
         {
             if (Console.CursorTop == 0) return;
@@ -249,5 +266,11 @@ namespace TURTLECHALLENGE
             Console.SetCursorPosition(0, Console.CursorTop - 1);
         }
 
+        private static bool isValidSelection(string input)
+        {
+            var regex = @"\d";
+            var match = Regex.Match(input, regex, RegexOptions.IgnoreCase);
+            return match.Success;
+        }
     }
 }
