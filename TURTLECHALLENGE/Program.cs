@@ -22,12 +22,22 @@ namespace TURTLECHALLENGE
 
     public interface ITurtle
     {
+        void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine);
         void Place(string input);
         void Move();
         void Left();
         void Right();
         string Report();
     }
+
+    
+
+    public class Table
+    {
+        public const int Top = 4;
+        public const int Bottom = 0;
+    }
+
 
     public interface ITurtleState
     {
@@ -38,7 +48,7 @@ namespace TURTLECHALLENGE
 
     public class TurtleState : ITurtleState
     {
-        public int XPos { get; set; }
+        public int XPos { get; set; } 
         public int YPos { get; set; }
         public Face Face { get; set; }
     }
@@ -50,6 +60,7 @@ namespace TURTLECHALLENGE
         private const int TOP = 4;
         private const int BOTTOM = 0;
 
+        
         private ITurtleState _turtleState;
         public Turtle(ITurtleState turtleState)
         {
@@ -128,11 +139,54 @@ namespace TURTLECHALLENGE
         {
             return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
-    }
 
-    public static class CommandExtension
-    {
-        public static bool IsValidPlaceCommand(this string input)
+        public void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine)
+        {
+            var input = readLine();
+            var inputs = input.ToUpper().Split(" ");
+            string cmd = inputs[0];
+            Command command;
+            if (Enum.TryParse(cmd.ToUpper(), out command))
+            {
+                if (command != Command.PLACE)
+                {
+                    if (!IsPlaced)
+                    {
+                        deleteConsoleLine();
+                        ProcessCommand(readLine, report, deleteConsoleLine);
+                    }
+                }
+                else
+                {
+                    if (!IsValidPlaceCommand(input))
+                    {
+                        deleteConsoleLine();
+                        ProcessCommand(readLine, report, deleteConsoleLine);
+                    }
+                }
+
+                switch (command)
+                {
+                    case Command.PLACE: Place(input); break;
+                    case Command.MOVE: Move(); break;
+                    case Command.LEFT: Left(); break;
+                    case Command.RIGHT: Right(); break;
+                    case Command.REPORT:
+                        Report();
+                        report(Report());
+                        break;
+                }
+            }
+            else
+            {
+                deleteConsoleLine();
+            }
+
+            ProcessCommand(readLine, report, deleteConsoleLine);
+
+        }
+
+        private bool IsValidPlaceCommand(string input)
         {
             var regex = @"([A-Z])\w+\s\d,\d,([A-Z])\w+";
             var match = Regex.Match(input, regex, RegexOptions.IgnoreCase);
@@ -153,11 +207,11 @@ namespace TURTLECHALLENGE
             return true;
         }
     }
+
     
     class Program
     {
-  
-        static Turtle turtle;
+
         static void Main(string[] args)
         {
             Startup();
@@ -165,55 +219,28 @@ namespace TURTLECHALLENGE
 
         static void Startup()
         {
-            turtle = new Turtle();
             Console.WriteLine("--INPUT--");
-            ProcessCommand(Console.ReadLine());
-        }
 
-        static void ProcessCommand(string input)
-        {
-            var inputs = input.ToUpper().Split(" ");
-            string cmd = inputs[0];
-            Command command;
-            if (Enum.TryParse(cmd.ToUpper(), out command))
+            var turtle = new Turtle();
+            
+            Func<string> readLine = () =>
             {
-                if (command != Command.PLACE)
-                {
-                    if (!turtle.IsPlaced)
-                    {
-                        DeletePrevConsoleLine();
-                        ProcessCommand(Console.ReadLine());
-                    }
-                }
-                else
-                {
-                    if (!input.IsValidPlaceCommand())
-                    {
-                        DeletePrevConsoleLine();
-                        ProcessCommand(Console.ReadLine());
-                    }
-                }
+                return Console.ReadLine();
+            };
 
-                switch (command)
-                {
-                    case Command.PLACE: turtle.Place(input); break;
-                    case Command.MOVE: turtle.Move(); break;
-                    case Command.LEFT: turtle.Left(); break;
-                    case Command.RIGHT: turtle.Right(); break;
-                    case Command.REPORT:
-                        Console.WriteLine("--OUTPUT--");
-                        Console.WriteLine(turtle.Report());
-                        break;
-                }
-            }
-            else
+            Action<string> report = (message) =>
+            {
+                Console.WriteLine(message);
+            };
+
+            Action deleteConsoleLine = () =>
             {
                 DeletePrevConsoleLine();
-            }
+            };
 
-            ProcessCommand(Console.ReadLine());
+            turtle.ProcessCommand(readLine, report, deleteConsoleLine);
         }
-
+        
         private static void DeletePrevConsoleLine()
         {
             if (Console.CursorTop == 0) return;
