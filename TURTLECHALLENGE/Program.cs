@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace TURTLECHALLENGE
@@ -22,7 +24,7 @@ namespace TURTLECHALLENGE
 
     public interface ITurtle
     {
-        void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine);
+        bool ProcessCommand(string readLine, Action<string> report, Action deleteConsoleLine);
         bool Place(string input);
         void Move();
         void Left();
@@ -141,9 +143,9 @@ namespace TURTLECHALLENGE
         {
             return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
-        public void ProcessCommand(Func<string> readLine, Action<string> report, Action deleteConsoleLine)
+        public bool ProcessCommand(string readLine, Action<string> report, Action deleteConsoleLine)
         {
-            var input = readLine();
+            var input = readLine;
             var inputs = input.ToUpper().Split(" ");
             string cmd = inputs[0];
             Command command;
@@ -154,7 +156,7 @@ namespace TURTLECHALLENGE
                     if (!IsPlaced)
                     {
                         deleteConsoleLine();
-                        ProcessCommand(readLine, report, deleteConsoleLine);
+                        return false;
                     }
                 }
                 else
@@ -162,7 +164,7 @@ namespace TURTLECHALLENGE
                     if (!IsValidPlaceCommand(input))
                     {
                         deleteConsoleLine();
-                        ProcessCommand(readLine, report, deleteConsoleLine);
+                        return false;
                     }
                 }
 
@@ -184,9 +186,10 @@ namespace TURTLECHALLENGE
             else
             {
                 deleteConsoleLine();
+                return false;
             }
 
-            ProcessCommand(readLine, report, deleteConsoleLine);
+            return true;
 
         }
 
@@ -201,7 +204,6 @@ namespace TURTLECHALLENGE
     
     class Program
     {
-
         static void Main(string[] args)
         {
             StartUp();
@@ -212,65 +214,67 @@ namespace TURTLECHALLENGE
             Console.WriteLine("Choose Options");
             Console.WriteLine("1. Standard Input 2. Input from FILE");
             var selection = Console.ReadLine();
-            if (isValidSelection(selection))
+            switch (selection)
             {
-                switch (selection)
-                {
-                    case "1": StandardInput(); break;
-                    case "2": FileInput(); break;
-                }
-            }
-            else
-            {
-                StartUp();
+                case "1": StandardInput(); break;
+                case "2": FileInput(); break;
+                default: StartUp(); break;
             }
         }
 
         static void FileInput()
         {
-
+            int counter = 0;
+            while (true)
+            {
+                var another = counter > 0 ? " another " : " ";
+                Console.WriteLine($"Paste{another}file location...");
+                var path = Console.ReadLine();
+                var inputSequence = new List<string>();
+                using (var reader = new StreamReader(@path))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        var line = reader.ReadLine();
+                        inputSequence.Add(line);
+                    }
+                    Console.WriteLine("--INPUT--");
+                    var table = new Table();
+                    var turtleState = new TurtleState();
+                    var turtle = new Turtle(turtleState, table);
+                    foreach (var input in inputSequence)
+                    {
+                        turtle.ProcessCommand(input,
+                                              (message) => Console.WriteLine(message),
+                                              () => { });
+                    }
+                }
+                counter++;
+            }
         }
 
         static void StandardInput()
         {
             Console.WriteLine("--INPUT--");
-
             var table = new Table();
             var turtleState = new TurtleState();
             var turtle = new Turtle(turtleState, table);
 
-            Func<string> readLine = () =>
+            while (true)
             {
-                return Console.ReadLine();
-            };
-
-            Action<string> report = (message) =>
-            {
-                Console.WriteLine(message);
-            };
-
-            Action deleteConsoleLine = () =>
-            {
-                DeletePrevConsoleLine();
-            };
-
-            turtle.ProcessCommand(readLine, report, deleteConsoleLine);
+                var input = Console.ReadLine();
+                turtle.ProcessCommand(input,
+                                  (message) => Console.WriteLine(message),
+                                  () => DeletePrevConsoleLine());
+            }
+            
         }
-        
-        
         private static void DeletePrevConsoleLine()
         {
             if (Console.CursorTop == 0) return;
             Console.SetCursorPosition(0, Console.CursorTop - 1);
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, Console.CursorTop - 1);
-        }
-
-        private static bool isValidSelection(string input)
-        {
-            var regex = @"\d";
-            var match = Regex.Match(input, regex, RegexOptions.IgnoreCase);
-            return match.Success;
         }
     }
 }

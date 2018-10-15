@@ -1,0 +1,13 @@
+asdasd
+Julius
+Bacosa
+MOVE
+PLACE
+PLACE 1,2,EAST 
+MOVE 
+MOVE 
+KOOI
+LEFT
+PWOEIR 
+MOVE 
+REPORT 
