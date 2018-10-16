@@ -12,7 +12,6 @@ namespace TURTLECHALLENGE
         EAST,
         WEST
     }
-
     public enum Command
     {
         PLACE,
@@ -21,7 +20,6 @@ namespace TURTLECHALLENGE
         RIGHT,
         REPORT
     }
-
     public interface ITurtle
     {
         bool ProcessCommand(string readLine, Action<string> report, Action deleteConsoleLine);
@@ -31,7 +29,6 @@ namespace TURTLECHALLENGE
         void Right();
         string Report();
     }
-
     public interface ITable
     {
         int NorthEdge { get; set; }
@@ -39,7 +36,6 @@ namespace TURTLECHALLENGE
         int EastEdge { get; set; }
         int WestEdge { get; set; }
     }
-
     public class Table : ITable
     {
         public int NorthEdge { get; set; } = 4;
@@ -47,21 +43,18 @@ namespace TURTLECHALLENGE
         public int EastEdge { get; set; } = 4;
         public int WestEdge { get; set; } = 0;
     }
-
     public interface ITurtleState
     {
         int XPos { get; set; }
         int YPos { get; set; }
         Face Face { get; set; }
     }
-
     public class TurtleState : ITurtleState
     {
         public int XPos { get; set; } 
         public int YPos { get; set; }
         public Face Face { get; set; }
     }
-
     public class Turtle : ITurtle
     {
         public bool IsPlaced { get; private set; } = false;
@@ -94,7 +87,6 @@ namespace TURTLECHALLENGE
                     return IsPlaced;
                 }
             }
-
             return IsPlaced;
         }
         public void Move()
@@ -188,9 +180,7 @@ namespace TURTLECHALLENGE
                 deleteConsoleLine();
                 return false;
             }
-
             return true;
-
         }
 
         private bool IsValidPlaceCommand(string input)
@@ -201,7 +191,6 @@ namespace TURTLECHALLENGE
         }
     }
 
-    
     class Program
     {
         static void Main(string[] args)
@@ -218,8 +207,13 @@ namespace TURTLECHALLENGE
             {
                 case "1": StandardInput(); break;
                 case "2": FileInput(); break;
-                default: StartUp(); break;
+                default: BackToStartUp(); break;
             }
+        }
+
+        static void BackToStartUp()
+        {
+            StartUp();
         }
 
         static void FileInput()
