@@ -87,7 +87,10 @@ namespace TURTLECHALLENGE.objects
         {
             return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
-        public bool ProcessCommand(string readLine, Action<string> report, Action deleteConsoleLine, Func<string,bool> isValidPlaceCommand)
+        public bool ProcessCommand(string readLine, 
+                                   Action<string> report, 
+                                   Action deleteConsoleLine, 
+                                   Func<string,bool> isValidPlaceCommand)
         {
             var input = readLine;
             var inputs = input.ToUpper().Split(" ");
