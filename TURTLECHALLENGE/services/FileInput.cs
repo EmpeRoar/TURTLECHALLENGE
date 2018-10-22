@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TURTLECHALLENGE.extensions;
@@ -33,12 +34,24 @@ namespace TURTLECHALLENGE.services
                 Console.WriteLine("--INPUT--");
 
                 var inputSequence = (string.IsNullOrEmpty(path) || path.IsNotValidPath())  ?  
-                                    new List<string>() :  
+                                    new List<string>() :
                                     ReadCommandsFromFile(path);
 
                 foreach (var input in inputSequence)
                     _turtle.ProcessCommand(input, _report, _deleteConsoleLine, _isValidPlaceCommand);
-
+            }
+        }
+        
+        private IEnumerable<string> ReadCommandsFromFile(string path)
+        {
+            using (var reader = new StreamReader(@path))
+            {
+                if (_firstPrompt) _firstPrompt = false;
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    yield return line;
+                }
             }
         }
 
@@ -47,21 +60,6 @@ namespace TURTLECHALLENGE.services
             var another = !_firstPrompt ? " another " : " ";
             Console.WriteLine($"Paste{another}file location...");
             return Console.ReadLine();
-        }
-
-        private List<string> ReadCommandsFromFile(string path)
-        {
-            var inputSequence = new List<string>();
-            using (var reader = new StreamReader(@path))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    inputSequence.Add(line);
-                }
-                if (_firstPrompt) _firstPrompt = false;
-                return inputSequence;
-            }
         }
 
     }
