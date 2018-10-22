@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TURTLECHALLENGE.enumerations;
+﻿using TURTLECHALLENGE.enumerations;
 using TURTLECHALLENGE.interfaces;
 
 namespace TURTLECHALLENGE.model

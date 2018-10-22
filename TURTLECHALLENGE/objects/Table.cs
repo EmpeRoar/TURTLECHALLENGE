@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TURTLECHALLENGE.interfaces;
+﻿using TURTLECHALLENGE.interfaces;
 
 namespace TURTLECHALLENGE.objects
 {

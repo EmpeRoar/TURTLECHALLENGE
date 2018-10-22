@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using TURTLECHALLENGE.extensions;
 using TURTLECHALLENGE.interfaces;
-using TURTLECHALLENGE.objects;
 
 namespace TURTLECHALLENGE.services
 {
