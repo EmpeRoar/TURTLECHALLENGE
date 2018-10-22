@@ -14,6 +14,8 @@ namespace TURTLECHALLENGE.services
         Action<string> _report;
         Action _deleteConsoleLine;
         Func<string, bool> _isValidPlaceCommand;
+        bool _firstPrompt = true;
+
         public FileInput(ITurtle turtle,
                          Action<string> report,
                          Action deleteConsoleLine,
@@ -27,23 +29,24 @@ namespace TURTLECHALLENGE.services
 
         public void Execute()
         {
-            int counter = 0;
             while (true)
             {
-                var path = AskFilePath(counter);
+                var path = AskFilePath();
                 Console.WriteLine("--INPUT--");
-                var inputSequence = string.IsNullOrEmpty(path) ? 
-                                    new List<string>() : 
+
+                var inputSequence = (string.IsNullOrEmpty(path) || path.IsNotValidPath())  ?  
+                                    new List<string>() :  
                                     ReadCommandsFromFile(path);
+
                 foreach (var input in inputSequence)
-                    _turtle.ProcessCommand(input, _report, _deleteConsoleLine, _isValidPlaceCommand);               
-                counter++;
+                    _turtle.ProcessCommand(input, _report, _deleteConsoleLine, _isValidPlaceCommand);
+
             }
         }
 
-        private string AskFilePath(int counter)
+        private string AskFilePath()
         {
-            var another = counter > 0 ? " another " : " ";
+            var another = !_firstPrompt ? " another " : " ";
             Console.WriteLine($"Paste{another}file location...");
             return Console.ReadLine();
         }
@@ -58,6 +61,7 @@ namespace TURTLECHALLENGE.services
                     var line = reader.ReadLine();
                     inputSequence.Add(line);
                 }
+                if (_firstPrompt) _firstPrompt = false;
                 return inputSequence;
             }
         }
