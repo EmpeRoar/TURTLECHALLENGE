@@ -82,13 +82,13 @@ namespace TURTLECHALLENGE.model
                 case Face.WEST: _turtleState.Face = Face.SOUTH; break;
             }
         }
-        public string Report()
+        public string GetReport()
         {
             return $"{_turtleState.XPos} {_turtleState.YPos} {_turtleState.Face}";
         }
         public bool ProcessCommand(string readLine,
-                                   Action<string> report,
-                                   Action deleteConsoleLine,
+                                   Action<string> emitReport,
+                                   Action clearCommandLine,
                                    Func<string, bool> isValidPlaceCommand)
         {
             var input = readLine;
@@ -101,7 +101,7 @@ namespace TURTLECHALLENGE.model
                 {
                     if (!IsPlaced)
                     {
-                        deleteConsoleLine();
+                        clearCommandLine();
                         return false;
                     }
                 }
@@ -109,7 +109,7 @@ namespace TURTLECHALLENGE.model
                 {
                     if (!isValidPlaceCommand(input))
                     {
-                        deleteConsoleLine();
+                        clearCommandLine();
                         return false;
                     }
                 }
@@ -118,20 +118,20 @@ namespace TURTLECHALLENGE.model
                 {
                     case Command.PLACE:
                         if (!Place(input))
-                            deleteConsoleLine();
+                            clearCommandLine();
                         break;
                     case Command.MOVE: Move(); break;
                     case Command.LEFT: Left(); break;
                     case Command.RIGHT: Right(); break;
                     case Command.REPORT:
-                        Report();
-                        report(Report());
+                        GetReport();
+                        emitReport(GetReport());
                         break;
                 }
             }
             else
             {
-                deleteConsoleLine();
+                clearCommandLine();
                 return false;
             }
             return true;

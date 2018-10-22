@@ -7,17 +7,17 @@ namespace TURTLECHALLENGE.services
     {
         public ITurtle Turtle;
         public Action<string> Report;
-        public Action DeleteConsoleLine;
+        public Action ClearCommandLine;
         public Func<string, bool> IsValidPlaceCommand;
 
         public StandardInput(ITurtle turtle,
                             Action<string> report,
-                            Action deleteConsoleLine,
+                            Action clearCommandLine,
                             Func<string, bool> isValidPlaceCommand)
         {
             Turtle = turtle;
             Report = report;
-            DeleteConsoleLine = deleteConsoleLine;
+            ClearCommandLine = clearCommandLine;
             IsValidPlaceCommand = isValidPlaceCommand;
         }
 
@@ -27,7 +27,7 @@ namespace TURTLECHALLENGE.services
             while (true)
             {
                 var input = Console.ReadLine();
-                Turtle.ProcessCommand(input, Report, DeleteConsoleLine, IsValidPlaceCommand);
+                Turtle.ProcessCommand(input, Report, ClearCommandLine, IsValidPlaceCommand);
             }
         }
     }

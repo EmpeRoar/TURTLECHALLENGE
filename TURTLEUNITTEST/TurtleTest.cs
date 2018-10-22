@@ -1,10 +1,7 @@
 using FluentAssertions;
-using Moq;
 using System;
 using System.Collections.Generic;
-using TURTLECHALLENGE.interfaces;
 using TURTLECHALLENGE.model;
-using TURTLECHALLENGE.objects;
 using Xunit;
 
 namespace TURTLEUNITTEST
@@ -25,10 +22,10 @@ namespace TURTLEUNITTEST
 
             string input = "";
             Action<string> message = (msg) => { };
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
-            var result = turtle.ProcessCommand(input, message, deletePrevConsoleLine, isValidPlaceCommand);
+            var result = turtle.ProcessCommand(input, message, clearCommandLine, isValidPlaceCommand);
 
             result.Should().Be(false);
         }
@@ -42,10 +39,10 @@ namespace TURTLEUNITTEST
 
             string input = "PLACE 0,0,NORTH";
             Action<string> message = (msg) => { };
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
-            var result = turtle.ProcessCommand(input, message, deletePrevConsoleLine, isValidPlaceCommand);
+            var result = turtle.ProcessCommand(input, message, clearCommandLine, isValidPlaceCommand);
 
             result.Should().Be(true);
         }
@@ -62,7 +59,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -80,7 +77,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("1 4 WEST");
         }
@@ -95,7 +92,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -117,7 +114,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("1 4 WEST");
         }
@@ -132,7 +129,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -144,7 +141,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("");
         }
@@ -159,7 +156,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -170,7 +167,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("");
         }
@@ -185,7 +182,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -201,7 +198,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("4 0 EAST");
         }
@@ -216,7 +213,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -232,7 +229,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("0 0 WEST");
         }
@@ -247,7 +244,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -263,7 +260,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("0 4 NORTH");
         }
@@ -278,7 +275,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -294,7 +291,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("0 0 SOUTH");
         }
@@ -309,7 +306,7 @@ namespace TURTLEUNITTEST
             string reportMessage = "";
 
             Action<string> report = (msg) => reportMessage = msg;
-            Action deletePrevConsoleLine = () => { };
+            Action clearCommandLine = () => { };
             Func<string, bool> isValidPlaceCommand = (cmd) => { return true; };
 
             var commandSequence = new List<string>()
@@ -326,7 +323,7 @@ namespace TURTLEUNITTEST
             };
 
             foreach (var command in commandSequence)
-                turtle.ProcessCommand(command, report, deletePrevConsoleLine, isValidPlaceCommand);
+                turtle.ProcessCommand(command, report, clearCommandLine, isValidPlaceCommand);
 
             reportMessage.Should().Be("3 3 NORTH");
         }

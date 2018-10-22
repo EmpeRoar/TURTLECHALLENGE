@@ -14,10 +14,10 @@ namespace TURTLECHALLENGE.services
 
         public FileInput(ITurtle turtle,
                         Action<string> report,
-                        Action deleteConsoleLine,
+                        Action clearCommandLine,
                         Func<string, bool> isValidPlaceCommand)  : base(turtle, 
-                                                                        report, 
-                                                                        deleteConsoleLine, 
+                                                                        report,
+                                                                        clearCommandLine, 
                                                                         isValidPlaceCommand) 
         {
 
@@ -35,7 +35,7 @@ namespace TURTLECHALLENGE.services
                                     ReadCommandsFromFile(path);
 
                 foreach (var input in inputSequence)
-                    Turtle.ProcessCommand(input, Report, DeleteConsoleLine, IsValidPlaceCommand);
+                    Turtle.ProcessCommand(input, Report, ClearCommandLine, IsValidPlaceCommand);
             }
         }
 

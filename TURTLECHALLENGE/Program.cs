@@ -32,7 +32,7 @@ namespace TURTLECHALLENGE
                     var standardInput = new StandardInput(
                                      SetupTurtle(),
                                      (message) => Console.WriteLine(message),
-                                     () => Helpers.DeletePrevConsoleLine(),
+                                     () => Helpers.ClearCommandLine(),
                                      (command) => command.IsValidPlaceCommand());
                         standardInput.Execute();
                     break;

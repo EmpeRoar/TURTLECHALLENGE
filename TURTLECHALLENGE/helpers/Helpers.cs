@@ -4,7 +4,7 @@ namespace TURTLECHALLENGE.helpers
 {
     public static class Helpers
     {
-        public static void DeletePrevConsoleLine()
+        public static void ClearCommandLine()
         {
             if (Console.CursorTop == 0) return;
             Console.SetCursorPosition(0, Console.CursorTop - 1);
