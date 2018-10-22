@@ -1,6 +1,9 @@
-﻿using TURTLECHALLENGE.interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using TURTLECHALLENGE.interfaces;
 
-namespace TURTLECHALLENGE.objects
+namespace TURTLECHALLENGE.model
 {
     public class Table : ITable
     {

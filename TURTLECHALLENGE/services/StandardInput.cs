@@ -3,29 +3,31 @@ using TURTLECHALLENGE.interfaces;
 
 namespace TURTLECHALLENGE.services
 {
-    public class StandardInput
+    public class StandardInput : ICommandInput
     {
-        ITurtle _turtle;
-        Action<string> _report;
-        Action _deleteConsoleLine;
-        Func<string, bool> _isValidPlaceCommand;
+        public ITurtle Turtle;
+        public Action<string> Report;
+        public Action DeleteConsoleLine;
+        public Func<string, bool> IsValidPlaceCommand;
+
         public StandardInput(ITurtle turtle,
                             Action<string> report,
                             Action deleteConsoleLine,
                             Func<string, bool> isValidPlaceCommand)
         {
-            _turtle = turtle;
-            _report = report;
-            _deleteConsoleLine = deleteConsoleLine;
-            _isValidPlaceCommand = isValidPlaceCommand;
+            Turtle = turtle;
+            Report = report;
+            DeleteConsoleLine = deleteConsoleLine;
+            IsValidPlaceCommand = isValidPlaceCommand;
         }
-        public void Execute()
+
+        public virtual void Execute()
         {
             Console.WriteLine("--INPUT--");
             while (true)
             {
                 var input = Console.ReadLine();
-                _turtle.ProcessCommand(input, _report, _deleteConsoleLine, _isValidPlaceCommand);
+                Turtle.ProcessCommand(input, Report, DeleteConsoleLine, IsValidPlaceCommand);
             }
         }
     }

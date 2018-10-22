@@ -7,26 +7,23 @@ using TURTLECHALLENGE.interfaces;
 
 namespace TURTLECHALLENGE.services
 {
-    public class FileInput
+    public class FileInput : StandardInput
     {
-        ITurtle _turtle;
-        Action<string> _report;
-        Action _deleteConsoleLine;
-        Func<string, bool> _isValidPlaceCommand;
+       
         bool _firstPrompt = true;
 
         public FileInput(ITurtle turtle,
-                         Action<string> report,
-                         Action deleteConsoleLine,
-                         Func<string, bool> isValidPlaceCommand)
+                        Action<string> report,
+                        Action deleteConsoleLine,
+                        Func<string, bool> isValidPlaceCommand)  : base(turtle, 
+                                                                        report, 
+                                                                        deleteConsoleLine, 
+                                                                        isValidPlaceCommand) 
         {
-            _turtle = turtle;
-            _report = report;
-            _deleteConsoleLine = deleteConsoleLine;
-            _isValidPlaceCommand = isValidPlaceCommand;
+
         }
 
-        public void Execute()
+        public override void Execute()
         {
             while (true)
             {
@@ -38,10 +35,10 @@ namespace TURTLECHALLENGE.services
                                     ReadCommandsFromFile(path);
 
                 foreach (var input in inputSequence)
-                    _turtle.ProcessCommand(input, _report, _deleteConsoleLine, _isValidPlaceCommand);
+                    Turtle.ProcessCommand(input, Report, DeleteConsoleLine, IsValidPlaceCommand);
             }
         }
-        
+
         private IEnumerable<string> ReadCommandsFromFile(string path)
         {
             using (var reader = new StreamReader(@path))
